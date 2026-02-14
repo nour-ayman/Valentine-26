@@ -1,0 +1,215 @@
+/* --- Scene 1 & 2 Layout Foundations --- */
+.intro-stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+/* --- The Character --- */
+.wezza-pixel {
+  image-rendering: pixelated; 
+  image-rendering: crisp-edges;
+  width: auto;
+  height: 60vh;
+  display: block;
+}
+
+/* --- Cinematic Camera Controls --- */
+.camera-lens {
+  transition: transform 3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  transform: scale(1);
+}
+
+.camera-lens.fly-up {
+  transform: scale(0.08);
+  opacity: 0;
+}
+
+/* --- Scene 1: Black Fade Intro --- */
+.black-fade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2s ease-in-out;
+}
+
+.black-fade.active {
+  opacity: 1;
+}
+
+/* --- Scene 2: UI Elements --- */
+.whistle-prompt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 2rem;
+  color: #333;
+  opacity: 0;
+  animation: fadeInOut 2s infinite alternate;
+}
+
+@keyframes fadeInOut {
+  from { opacity: 0.3; }
+  to { opacity: 1; }
+}
+
+.void-stage {
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.birdseye-view {
+  text-align: center;
+}
+
+/* FIXED: Base class now only handles scale and final position */
+.wezza-back-pixel {
+  image-rendering: pixelated;
+  width: 50px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  transform: translateY(200px); /* Keeps him at the bottom always */
+}
+
+/* NEW: Apply this class ONLY to the wezza_back_shadow.png sprite */
+.wezza-intro-fade {
+  animation: birdEyeFadeInDown 1s forwards;
+}
+
+@keyframes birdEyeFadeInDown {
+  from { 
+    opacity: 0; 
+    transform: translateY(180px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(200px); 
+  }
+}
+
+.whistle-container {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.whistle-text {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.8rem;
+  color: #333;
+  letter-spacing: 2px;
+  animation: pulsePrompt 2s infinite ease-in-out;
+}
+
+.whistle-container.detected .whistle-text {
+  color: #ff4d4d;
+  animation: none;
+  transform: scale(1.1);
+}
+
+@keyframes pulsePrompt {
+  0% { opacity: 0.3; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.3; transform: scale(0.98); }
+}
+
+/* --- Crowd Logic --- */
+.crowd-member {
+  position: absolute;
+  image-rendering: pixelated;
+  height: auto;
+  left: -15%; 
+  top: 45%; 
+  z-index: 20;
+}
+
+.crowd-member.moving {
+  width: 50px; 
+}
+
+.crowd-member.resting {
+  width: 55px;
+  left: 50%;
+  transform: translate(calc(-50% + var(--target-x)), var(--target-y));
+}
+
+@keyframes runInLane {
+  0% { left: -15%; transform: translateY(var(--target-y)); }
+  100% { left: 50%; transform: translate(calc(-50% + var(--target-x)), var(--target-y)); }
+}
+
+@keyframes runInLaneRight {
+  0% { left: 115%; transform: translateY(var(--target-y)); }
+  100% { left: 50%; transform: translate(calc(-50% + var(--target-x)), var(--target-y)); }
+}
+
+.crowd-member.moving[style*="runInLaneRight"] {
+  transform: scaleX(-1) translateY(var(--target-y));
+}
+
+.coord-tracker {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Keep your existing .wezza-back-pixel as the base */
+.wezza-back-pixel {
+  image-rendering: pixelated;
+  width: 70px; /* Base size */
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  transform: translate(0px, 155px) !important; /* Adjust the X and Y values as needed */
+}
+
+/* NEW: Use this to control the Front-Facing Wezza (Happy/Blink) */
+.wezza-front-pixel {
+  width: 75px; /* Adjust this to change size */
+  /* Adjust the Y value (e.g., 205px) to move him up or down slightly */
+  transform: translate(0px, 150px) !important; /* Adjust the X and Y values as needed */
+  z-index: 30; /* Ensures he stays above the crowd if needed */
+}
+
+/* Final Sign Controls */
+.valentine-sign {
+  width: 175px !important; 
+  
+  /* POSITIONING: Adjust the X and Y values */
+  /* transform: translate(X-axis, Y-axis) */
+  /* X: 0px is center. Positive (10px) moves RIGHT. Negative (-10px) moves LEFT */
+  /* Y: 180px is your current vertical height */
+  transform: translate(-7.5px, 130px) !important; 
+  
+  z-index: 2000 !important; 
+  image-rendering: pixelated;
+  transition: none !important; 
+}
+
