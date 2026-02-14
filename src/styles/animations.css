@@ -108,7 +108,7 @@
 .whistle-container {
   position: absolute;
   top: 45%;
-  left: 67%;
+  left: 62%;
   transform: translate(-50%, -50%);
   text-align: center;
   pointer-events: none;
@@ -183,7 +183,7 @@
 /* Keep your existing .wezza-back-pixel as the base */
 .wezza-back-pixel {
   image-rendering: pixelated;
-  width: 70px; /* Base size */
+  width: 90px; /* Base size */
   height: auto;
   display: block;
   margin: 0 auto;
@@ -192,7 +192,7 @@
 
 /* NEW: Use this to control the Front-Facing Wezza (Happy/Blink) */
 .wezza-front-pixel {
-  width: 75px; /* Adjust this to change size */
+  width: 95px; /* Adjust this to change size */
   /* Adjust the Y value (e.g., 205px) to move him up or down slightly */
   transform: translate(0px, 150px) !important; /* Adjust the X and Y values as needed */
   z-index: 30; /* Ensures he stays above the crowd if needed */
@@ -200,7 +200,7 @@
 
 /* Final Sign Controls */
 .valentine-sign {
-  width: 175px !important; 
+  width: 195px !important; 
 
   /* POSITIONING: Adjust the X and Y values */
   /* transform: translate(X-axis, Y-axis) */
