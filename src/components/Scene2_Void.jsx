@@ -11,9 +11,8 @@ const Scene2_Void = () => {
   const [wezzaState, setWezzaState] = useState('back'); 
   const [isSequenceStarted, setIsSequenceStarted] = useState(false);
   const [isWhistleVisible, setIsWhistleVisible] = useState(false);
+  
   const [showTapPrompt, setShowTapPrompt] = useState(false);
-  const [isFadingOut, setIsFadingOut] = useState(false);
-
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
   useEffect(() => {
@@ -21,14 +20,12 @@ const Scene2_Void = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Preload remains important for the initial hit
   useEffect(() => {
     const imagesToPreload = [
       '/assets/images/wezza_happy.png',
       '/assets/images/wezza_happy_blink.png',
       '/assets/images/wezza_hold_sign.png',
-      '/assets/images/wezza_hold_sign_blink.png',
-      '/assets/images/wezza_back_shadow.png'
+      '/assets/images/wezza_hold_sign_blink.png'
     ];
     imagesToPreload.forEach((src) => {
       const img = new Image();
@@ -61,17 +58,13 @@ const Scene2_Void = () => {
   };
 
   const handleFonkaTap = () => {
-    if (showTapPrompt && !isFadingOut) {
-      setIsFadingOut(true);
+    if (showTapPrompt) {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       const context = new AudioContext();
       context.resume();
-
-      setTimeout(() => {
-        setShowTapPrompt(false);
-        startValentineLoop();
-        playAnlatamam();
-      }, 500);
+      setShowTapPrompt(false);
+      startValentineLoop();
+      playAnlatamam();
     }
   };
 
@@ -91,7 +84,6 @@ const Scene2_Void = () => {
       setWezzaState('back'); 
       setIsSequenceStarted(false);
       setShowTapPrompt(false);
-      setIsFadingOut(false);
     }
   }, [whistled, fullCrowd]);
 
@@ -113,7 +105,7 @@ const Scene2_Void = () => {
                   setWezzaState('blink');
                   setTimeout(() => {
                     if (isIOS) {
-                      setWezzaState('happy');
+                      setWezzaState('happy'); // Issue 2 Fix: Stay happy
                       setShowTapPrompt(true);
                     } else {
                       startValentineLoop();
@@ -136,7 +128,7 @@ const Scene2_Void = () => {
     }
   }, [activeCrowd]);
 
-  return (
+return (
     <div className="void-stage" onClick={handleFonkaTap}>
       {activeCrowd.length === 0 && isWhistleVisible && (
         <div className={`whistle-container ${whistled ? 'detected' : ''}`}>
@@ -144,19 +136,21 @@ const Scene2_Void = () => {
         </div>
       )}
 
+      {/* FIXED: The top-most layer prompt */}
       {showTapPrompt && (
         <div className="tap-prompt-layer">
-          <h2 className={`tap-text-moveable ${isFadingOut ? 'tap-fade-out' : 'tap-animate'}`}>
-            TAP THE SCREEN...
-          </h2>
+          <h2 className="tap-text-moveable tap-animate">TAP THE SCREEN...</h2>
         </div>
       )}
 
-      {/* FIXED CHARACTER RENDERING: Single div background swap */}
-      <div className={`wezza-sprite-container ${wezzaState === 'back' ? 'wezza-intro-fade' : ''}`}>
-        <div className={`wezza-pixel-sprite ${wezzaState}`}></div>
-      </div>
+      {/* Wezza States */}
+      {wezzaState === 'back' && <img src="/assets/images/wezza_back_shadow.png" className="wezza-back-pixel wezza-intro-fade" alt="Back" />}
+      {wezzaState === 'happy' && <img src="/assets/images/wezza_happy.png" className="wezza-back-pixel wezza-front-pixel" alt="Happy" />}
+      {wezzaState === 'blink' && <img src="/assets/images/wezza_happy_blink.png" className="wezza-back-pixel wezza-front-pixel" alt="Blink" />}
+      {wezzaState === 'valentine' && <img src="/assets/images/wezza_hold_sign.png" className="wezza-back-pixel wezza-front-pixel valentine-sign" alt="Valentine" />}
+      {wezzaState === 'valentine-blink' && <img src="/assets/images/wezza_hold_sign_blink.png" className="wezza-back-pixel wezza-front-pixel valentine-sign" alt="Valentine Blink" />}
       
+      {/* Crowd mapping remains the same */}
       {activeCrowd.map((person) => {
         const isResting = finishedIds.has(person.id);
         const prefix = person.side === 'left' ? 'MGR' : 'MGL';

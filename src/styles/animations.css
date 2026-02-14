@@ -10,6 +10,62 @@
   overflow: hidden;
 }
 
+/* --- The Character --- */
+.wezza-pixel {
+  image-rendering: pixelated; 
+  image-rendering: crisp-edges;
+  width: auto;
+  height: 60vh;
+  display: block;
+}
+
+/* --- Cinematic Camera Controls --- */
+.camera-lens {
+  transition: transform 3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  transform: scale(1);
+}
+
+.camera-lens.fly-up {
+  transform: scale(0.08);
+  opacity: 0;
+}
+
+/* --- Scene 1: Black Fade Intro --- */
+.black-fade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2s ease-in-out;
+}
+
+.black-fade.active {
+  opacity: 1;
+}
+
+/* --- Scene 2: UI Elements --- */
+.whistle-prompt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 2rem;
+  color: #333;
+  opacity: 0;
+  animation: fadeInOut 2s infinite alternate;
+}
+
+@keyframes fadeInOut {
+  from { opacity: 0.3; }
+  to { opacity: 1; }
+}
+
 .void-stage {
   width: 100vw;
   height: 100vh;
@@ -17,63 +73,42 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
 }
 
-/* --- THE CHARACTER: Flicker-Free Sprite System --- */
-/* This container holds Wezza's steady position on the screen */
-.wezza-sprite-container {
-  position: absolute;
-  /* Centered horizontally, pushed down to ground level */
-  transform: translate(0px, 150px); 
-  z-index: 30;
-  pointer-events: none;
+.birdseye-view {
+  text-align: center;
 }
 
-/* The actual sprite that swaps background images instantly */
-.wezza-pixel-sprite {
-  width: 75px;
-  height: 110px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+/* FIXED: Base class now only handles scale and final position */
+.wezza-back-pixel {
   image-rendering: pixelated;
-  /* Crucial: disables transitions to allow instant frame swaps */
-  transition: none !important; 
+  width: 50px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  transform: translateY(200px); /* Keeps him at the bottom always */
 }
 
-/* Character States: Background swaps prevent network-related flickering */
-.wezza-pixel-sprite.back { background-image: url('/assets/images/wezza_back_shadow.png'); width: 70px; }
-.wezza-pixel-sprite.happy { background-image: url('/assets/images/wezza_happy.png'); }
-.wezza-pixel-sprite.blink { background-image: url('/assets/images/wezza_happy_blink.png'); }
-
-/* Valentine Sign adjustments: Handle the wider dimensions of the sign */
-.wezza-pixel-sprite.valentine, 
-.wezza-pixel-sprite.valentine-blink {
-  width: 175px;
-  height: 150px;
-  transform: translate(-7.5px, -16.5px); 
-  z-index: 2000;
-}
-.wezza-pixel-sprite.valentine { background-image: url('/assets/images/wezza_hold_sign.png'); }
-.wezza-pixel-sprite.valentine-blink { background-image: url('/assets/images/wezza_hold_sign_blink.png'); }
-
-/* --- Cinematic Camera & Intro --- */
+/* NEW: Apply this class ONLY to the wezza_back_shadow.png sprite */
 .wezza-intro-fade {
   animation: birdEyeFadeInDown 1s forwards;
 }
 
 @keyframes birdEyeFadeInDown {
-  from { opacity: 0; transform: translate(0px, 130px); }
-  to { opacity: 1; transform: translate(0px, 150px); }
+  from { 
+    opacity: 0; 
+    transform: translateY(180px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(200px); 
+  }
 }
 
-/* --- UI: Whistle Prompt --- */
 .whistle-container {
   position: absolute;
-  /* ADJUST POSITION HERE */
-  top: 45%; 
-  left: 67%; 
+  top: 45%;
+  left: 67%;
   transform: translate(-50%, -50%);
   text-align: center;
   pointer-events: none;
@@ -87,48 +122,16 @@
   animation: pulsePrompt 2s infinite ease-in-out;
 }
 
-/* --- UI: Fonka's Tap Prompt (iOS Only) --- */
-.tap-prompt-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 10000; /* Front-most layer */
-}
-
-.tap-text-moveable {
-  position: absolute;
-  /* ADJUST POSITION HERE */
-  top: 60%; 
-  left: 55%; 
-  transform: translate(-50%, -50%);
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 1.8rem;
-  color: #333;
-  white-space: nowrap;
-  text-align: center;
-}
-
-/* --- Animations: Pulsing and Fading --- */
-.tap-animate {
-  animation: pulsePrompt 2s infinite ease-in-out;
-}
-
-.tap-fade-out {
-  animation: fadeOut 0.5s forwards;
+.whistle-container.detected .whistle-text {
+  color: #ff4d4d;
+  animation: none;
+  transform: scale(1.1);
 }
 
 @keyframes pulsePrompt {
-  0% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.95); }
-  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
-  100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.95); }
-}
-
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; visibility: hidden; }
+  0% { opacity: 0.3; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.3; transform: scale(0.98); }
 }
 
 /* --- Crowd Logic --- */
@@ -141,7 +144,9 @@
   z-index: 20;
 }
 
-.crowd-member.moving { width: 50px; }
+.crowd-member.moving {
+  width: 50px; 
+}
 
 .crowd-member.resting {
   width: 55px;
@@ -157,4 +162,117 @@
 @keyframes runInLaneRight {
   0% { left: 115%; transform: translateY(var(--target-y)); }
   100% { left: 50%; transform: translate(calc(-50% + var(--target-x)), var(--target-y)); }
+}
+
+.crowd-member.moving[style*="runInLaneRight"] {
+  transform: scaleX(-1) translateY(var(--target-y));
+}
+
+.coord-tracker {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Keep your existing .wezza-back-pixel as the base */
+.wezza-back-pixel {
+  image-rendering: pixelated;
+  width: 70px; /* Base size */
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  transform: translate(0px, 155px) !important; /* Adjust the X and Y values as needed */
+}
+
+/* NEW: Use this to control the Front-Facing Wezza (Happy/Blink) */
+.wezza-front-pixel {
+  width: 75px; /* Adjust this to change size */
+  /* Adjust the Y value (e.g., 205px) to move him up or down slightly */
+  transform: translate(0px, 150px) !important; /* Adjust the X and Y values as needed */
+  z-index: 30; /* Ensures he stays above the crowd if needed */
+}
+
+/* Final Sign Controls */
+.valentine-sign {
+  width: 175px !important; 
+
+  /* POSITIONING: Adjust the X and Y values */
+  /* transform: translate(X-axis, Y-axis) */
+  /* X: 0px is center. Positive (10px) moves RIGHT. Negative (-10px) moves LEFT */
+  /* Y: 180px is your current vertical height */
+  transform: translate(-7.5px, 130px) !important; 
+
+  z-index: 2000 !important; 
+  image-rendering: pixelated;
+  transition: none !important; 
+}
+
+
+/* The parent container - stretches over the whole screen */
+.tap-prompt-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Allows click to hit the void-stage */
+  z-index: 10000; /* Front-most layer */
+}
+
+/* Moveable text element */
+.tap-text-moveable {
+  position: absolute;
+  
+  /* --- ADJUST THESE VALUES TO MOVE THE TEXT --- */
+  top: 60%;   /* Increase % to move DOWN, Decrease % to move UP */
+  left: 55%;  /* Increase % to move RIGHT, Decrease % to move LEFT */
+  /* -------------------------------------------- */
+
+  transform: translate(-50%, -50%); /* Keeps it centered on your chosen coordinates */
+  
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.8rem;
+  color: #333;
+  white-space: nowrap; /* Prevents text wrapping */
+  text-align: center;
+}
+
+.tap-animate {
+  animation: pulseWhistle 1.5s infinite ease-in-out;
+}
+
+/* Smooth ease-in-out pulsing */
+@keyframes pulsePrompt {
+  0% { 
+    opacity: 0.3; 
+    transform: translate(-50%, -50%) scale(0.95); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1.05); 
+  }
+  100% { 
+    opacity: 0.3; 
+    transform: translate(-50%, -50%) scale(0.95); 
+  }
+}
+
+/* Smooth fade out when Fonka taps */
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
+}
+
+.tap-animate {
+  animation: pulsePrompt 2s infinite ease-in-out;
+}
+
+.tap-fade-out {
+  animation: fadeOut 0.5s forwards;
 }
