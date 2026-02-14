@@ -21,11 +21,13 @@ const Scene2_Void = () => {
   }, []);
 
   useEffect(() => {
+    // FIXED: Using absolute root paths for preloading
     const imagesToPreload = [
       '/assets/images/wezza_happy.png',
       '/assets/images/wezza_happy_blink.png',
       '/assets/images/wezza_hold_sign.png',
-      '/assets/images/wezza_hold_sign_blink.png'
+      '/assets/images/wezza_hold_sign_blink.png',
+      '/assets/images/wezza_back_shadow.png'
     ];
     imagesToPreload.forEach((src) => {
       const img = new Image();
@@ -34,6 +36,7 @@ const Scene2_Void = () => {
   }, []);
 
   const playAnlatamam = () => {
+    // FIXED: Using absolute root path for audio
     const audio = new Audio('/assets/sounds/Anlatamam.mp3');
     audio.currentTime = 15; 
     audio.volume = 1.0; 
@@ -105,7 +108,7 @@ const Scene2_Void = () => {
                   setWezzaState('blink');
                   setTimeout(() => {
                     if (isIOS) {
-                      setWezzaState('happy'); // Issue 2 Fix: Stay happy
+                      setWezzaState('happy');
                       setShowTapPrompt(true);
                     } else {
                       startValentineLoop();
@@ -128,7 +131,7 @@ const Scene2_Void = () => {
     }
   }, [activeCrowd]);
 
-return (
+  return (
     <div className="void-stage" onClick={handleFonkaTap}>
       {activeCrowd.length === 0 && isWhistleVisible && (
         <div className={`whistle-container ${whistled ? 'detected' : ''}`}>
@@ -136,27 +139,26 @@ return (
         </div>
       )}
 
-      {/* FIXED: The top-most layer prompt */}
       {showTapPrompt && (
         <div className="tap-prompt-layer">
           <h2 className="tap-text-moveable tap-animate">TAP THE SCREEN...</h2>
         </div>
       )}
 
-      {/* Wezza States */}
+      {/* FIXED: Absolute root paths for Wezza sprites */}
       {wezzaState === 'back' && <img src="/assets/images/wezza_back_shadow.png" className="wezza-back-pixel wezza-intro-fade" alt="Back" />}
       {wezzaState === 'happy' && <img src="/assets/images/wezza_happy.png" className="wezza-back-pixel wezza-front-pixel" alt="Happy" />}
       {wezzaState === 'blink' && <img src="/assets/images/wezza_happy_blink.png" className="wezza-back-pixel wezza-front-pixel" alt="Blink" />}
       {wezzaState === 'valentine' && <img src="/assets/images/wezza_hold_sign.png" className="wezza-back-pixel wezza-front-pixel valentine-sign" alt="Valentine" />}
       {wezzaState === 'valentine-blink' && <img src="/assets/images/wezza_hold_sign_blink.png" className="wezza-back-pixel wezza-front-pixel valentine-sign" alt="Valentine Blink" />}
       
-      {/* Crowd mapping remains the same */}
       {activeCrowd.map((person) => {
         const isResting = finishedIds.has(person.id);
         const prefix = person.side === 'left' ? 'MGR' : 'MGL';
         return (
           <img
             key={person.id}
+            // FIXED: Absolute root path for crowd sprites
             src={isResting ? '/assets/images/maghrb/mghrb-rest.png' : `/assets/images/maghrb/${prefix}_00${frame}.png`}
             className={`crowd-member ${isResting ? 'resting' : 'moving'}`}
             onAnimationEnd={() => setFinishedIds(prev => new Set(prev).add(person.id))}
