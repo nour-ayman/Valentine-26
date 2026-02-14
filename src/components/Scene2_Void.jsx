@@ -6,21 +6,18 @@ const Scene2_Void = () => {
   const [activeCrowd, setActiveCrowd] = useState([]);
   const [finishedIds, setFinishedIds] = useState(new Set());
   const [frame, setFrame] = useState(0);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const whistled = useWhistle(0.25);
 
   const [wezzaState, setWezzaState] = useState('back'); 
   const [isSequenceStarted, setIsSequenceStarted] = useState(false);
-  
-  // NEW: State to control when the whistle prompt appears
   const [isWhistleVisible, setIsWhistleVisible] = useState(false);
+  
+  const [showTapPrompt, setShowTapPrompt] = useState(false);
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-  // Trigger the 1.5s delay for the whistle text
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsWhistleVisible(true);
-    }, 1500);
-    return () => clearTimeout(timer); // Cleanup on unmount
+    const timer = setTimeout(() => setIsWhistleVisible(true), 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -41,7 +38,7 @@ const Scene2_Void = () => {
     audio.currentTime = 15; 
     audio.volume = 1.0; 
     audio.loop = true;
-    audio.play().catch(e => console.log("Audio blocked by browser:", e));
+    audio.play().catch(e => console.log("Audio blocked:", e));
   };
 
   const startValentineLoop = () => {
@@ -60,35 +57,23 @@ const Scene2_Void = () => {
     runStep(1);
   };
 
-  const handleMouseMove = (e) => {
-    const x = e.clientX - window.innerWidth / 2;
-    const y = e.clientY - window.innerHeight * 0.45; 
-    setMousePos({ x: Math.round(x), y: Math.round(y) });
+  const handleFonkaTap = () => {
+    if (showTapPrompt) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const context = new AudioContext();
+      context.resume();
+      setShowTapPrompt(false);
+      startValentineLoop();
+      playAnlatamam();
+    }
   };
 
   const fullCrowd = useMemo(() => {
-    const leftCoords = [
-      { x: 0, y: 0 }, { x: 0, y: -30 }, { x: 0, y: -60 }, { x: 0, y: -90 }, { x: 0, y: -120 }, { x: 0, y: -145 }, 
-      { x: -30, y: -30}, { x: -30, y: -60 }, { x: -30, y: -90}, { x: -30, y: -120}, { x: -30, y: -145}, { x: -30, y: -175},
-      { x: -60, y: -60}, { x: -60, y: -90}, { x: -60, y: -120}, { x: -60, y: -145}, { x: -60, y: -175}, { x: -60, y: -200},
-      { x: -90, y: -90}, { x: -90, y: -120}, { x: -90, y: -145}, { x: -90, y: -175}, { x: -90, y: -200},
-      { x: -120, y: -120}, { x: -120, y: -145}, { x: -120, y: -175}
-    ];
-    const rightCoords = [
-      { x: 30, y: -30}, { x: 30, y: -60 }, { x: 30, y: -90}, { x: 30, y: -120}, { x: 30, y: -145}, { x: 30, y: -175},
-      { x: 60, y: -60}, { x: 60, y: -90}, { x: 60, y: -120}, { x: 60, y: -145}, { x: 60, y: -175}, { x: 60, y: -200},
-      { x: 90, y: -90}, { x: 90, y: -120}, { x: 90, y: -145}, { x: 90, y: -175}, { x: 90, y: -200},
-      { x: 120, y: -120}, { x: 120, y: -145}, { x: 120, y: -175}
-    ];
+    const leftCoords = [{ x: 0, y: 0 }, { x: 0, y: -30 }, { x: 0, y: -60 }, { x: 0, y: -90 }, { x: 0, y: -120 }, { x: 0, y: -145 }, { x: -30, y: -30}, { x: -30, y: -60 }, { x: -30, y: -90}, { x: -30, y: -120}, { x: -30, y: -145}, { x: -30, y: -175}, { x: -60, y: -60}, { x: -60, y: -90}, { x: -60, y: -120}, { x: -60, y: -145}, { x: -60, y: -175}, { x: -60, y: -200}, { x: -90, y: -90}, { x: -90, y: -120}, { x: -90, y: -145}, { x: -90, y: -175}, { x: -90, y: -200}, { x: -120, y: -120}, { x: -120, y: -145}, { x: -120, y: -175}];
+    const rightCoords = [{ x: 30, y: -30}, { x: 30, y: -60 }, { x: 30, y: -90}, { x: 30, y: -120}, { x: 30, y: -145}, { x: 30, y: -175}, { x: 60, y: -60}, { x: 60, y: -90}, { x: 60, y: -120}, { x: 60, y: -145}, { x: 60, y: -175}, { x: 60, y: -200}, { x: 90, y: -90}, { x: 90, y: -120}, { x: 90, y: -145}, { x: 90, y: -175}, { x: 90, y: -200}, { x: 120, y: -120}, { x: 120, y: -145}, { x: 120, y: -175}];
     const speed = 0.10;
-    const leftSide = leftCoords.map((pos, i) => ({
-      id: `left-${i}`, targetX: pos.x, targetY: pos.y,
-      duration: (500 + pos.x) / speed, delay: Math.random() * 500, side: 'left'
-    }));
-    const rightSide = rightCoords.map((pos, i) => ({
-      id: `right-${i}`, targetX: pos.x, targetY: pos.y,
-      duration: (500 - pos.x) / speed, delay: Math.random() * 500, side: 'right'
-    }));
+    const leftSide = leftCoords.map((pos, i) => ({ id: `left-${i}`, targetX: pos.x, targetY: pos.y, duration: (500 + pos.x) / speed, delay: Math.random() * 500, side: 'left' }));
+    const rightSide = rightCoords.map((pos, i) => ({ id: `right-${i}`, targetX: pos.x, targetY: pos.y, duration: (500 - pos.x) / speed, delay: Math.random() * 500, side: 'right' }));
     return [...leftSide, ...rightSide];
   }, []);
 
@@ -98,6 +83,7 @@ const Scene2_Void = () => {
       setFinishedIds(new Set());
       setWezzaState('back'); 
       setIsSequenceStarted(false);
+      setShowTapPrompt(false);
     }
   }, [whistled, fullCrowd]);
 
@@ -118,8 +104,13 @@ const Scene2_Void = () => {
                 setTimeout(() => {
                   setWezzaState('blink');
                   setTimeout(() => {
-                    startValentineLoop();
-                    playAnlatamam(); 
+                    if (isIOS) {
+                      setWezzaState('happy'); // Issue 2 Fix: Stay happy
+                      setShowTapPrompt(true);
+                    } else {
+                      startValentineLoop();
+                      playAnlatamam();
+                    }
                   }, 150);
                 }, 500);
               }, 150);
@@ -128,7 +119,7 @@ const Scene2_Void = () => {
         }, 2000);
       }, 2000);
     }
-  }, [finishedIds, activeCrowd, isSequenceStarted]);
+  }, [finishedIds, activeCrowd, isSequenceStarted, isIOS]);
 
   useEffect(() => {
     if (activeCrowd.length > 0) {
@@ -137,35 +128,29 @@ const Scene2_Void = () => {
     }
   }, [activeCrowd]);
 
-  const handleArrived = (id) => {
-    setFinishedIds(prev => new Set(prev).add(id)); 
-  };
-
-  return (
-    <div className="void-stage" onMouseMove={handleMouseMove}>
-      {/* UPDATED: Only show whistle container if activeCrowd is empty AND the delay has passed */}
+return (
+    <div className="void-stage" onClick={handleFonkaTap}>
       {activeCrowd.length === 0 && isWhistleVisible && (
         <div className={`whistle-container ${whistled ? 'detected' : ''}`}>
           <h2 className="whistle-text">CAN YOU WHISTLE?</h2>
         </div>
       )}
 
-      {wezzaState === 'back' && (
-        <img src="/assets/images/wezza_back_shadow.png" className="wezza-back-pixel wezza-intro-fade" alt="Back" />
+      {/* FIXED: The top-most layer prompt */}
+      {showTapPrompt && (
+        <div className="tap-prompt-layer">
+          <h2 className="tap-text-moveable tap-animate">TAP THE SCREEN...</h2>
+        </div>
       )}
-      {wezzaState === 'happy' && (
-        <img src="/assets/images/wezza_happy.png" className="wezza-back-pixel wezza-front-pixel" alt="Happy" />
-      )}
-      {wezzaState === 'blink' && (
-        <img src="/assets/images/wezza_happy_blink.png" className="wezza-back-pixel wezza-front-pixel" alt="Blink" />
-      )}
-      {wezzaState === 'valentine' && (
-        <img src="/assets/images/wezza_hold_sign.png" className="wezza-back-pixel wezza-front-pixel valentine-sign" alt="Valentine" />
-      )}
-      {wezzaState === 'valentine-blink' && (
-        <img src="/assets/images/wezza_hold_sign_blink.png" className="wezza-back-pixel wezza-front-pixel valentine-sign" alt="Valentine Blink" />
-      )}
+
+      {/* Wezza States */}
+      {wezzaState === 'back' && <img src="/assets/images/wezza_back_shadow.png" className="wezza-back-pixel wezza-intro-fade" alt="Back" />}
+      {wezzaState === 'happy' && <img src="/assets/images/wezza_happy.png" className="wezza-back-pixel wezza-front-pixel" alt="Happy" />}
+      {wezzaState === 'blink' && <img src="/assets/images/wezza_happy_blink.png" className="wezza-back-pixel wezza-front-pixel" alt="Blink" />}
+      {wezzaState === 'valentine' && <img src="/assets/images/wezza_hold_sign.png" className="wezza-back-pixel wezza-front-pixel valentine-sign" alt="Valentine" />}
+      {wezzaState === 'valentine-blink' && <img src="/assets/images/wezza_hold_sign_blink.png" className="wezza-back-pixel wezza-front-pixel valentine-sign" alt="Valentine Blink" />}
       
+      {/* Crowd mapping remains the same */}
       {activeCrowd.map((person) => {
         const isResting = finishedIds.has(person.id);
         const prefix = person.side === 'left' ? 'MGR' : 'MGL';
@@ -174,7 +159,7 @@ const Scene2_Void = () => {
             key={person.id}
             src={isResting ? '/assets/images/maghrb/mghrb-rest.png' : `/assets/images/maghrb/${prefix}_00${frame}.png`}
             className={`crowd-member ${isResting ? 'resting' : 'moving'}`}
-            onAnimationEnd={() => handleArrived(person.id)}
+            onAnimationEnd={() => setFinishedIds(prev => new Set(prev).add(person.id))}
             style={{
               '--target-x': `${person.targetX}px`,
               '--target-y': `${person.targetY}px`,
@@ -186,15 +171,10 @@ const Scene2_Void = () => {
               animationTimingFunction: 'linear',
               animationFillMode: 'forwards'
             }}
-            alt="crowd member"
+            alt="crowd"
           />
         );
       })}
-
-      <div style={{ display: 'none' }}>
-        <img src="/assets/images/wezza_hold_sign.png" alt="p1" />
-        <img src="/assets/images/wezza_hold_sign_blink.png" alt="p2" />
-      </div>
     </div>
   );
 };

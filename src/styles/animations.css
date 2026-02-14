@@ -107,8 +107,8 @@
 
 .whistle-container {
   position: absolute;
-  top: 35%;
-  left: 50%;
+  top: 45%;
+  left: 67%;
   transform: translate(-50%, -50%);
   text-align: center;
   pointer-events: none;
@@ -213,3 +213,66 @@
   transition: none !important; 
 }
 
+
+/* The parent container - stretches over the whole screen */
+.tap-prompt-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Allows click to hit the void-stage */
+  z-index: 10000; /* Front-most layer */
+}
+
+/* Moveable text element */
+.tap-text-moveable {
+  position: absolute;
+  
+  /* --- ADJUST THESE VALUES TO MOVE THE TEXT --- */
+  top: 60%;   /* Increase % to move DOWN, Decrease % to move UP */
+  left: 55%;  /* Increase % to move RIGHT, Decrease % to move LEFT */
+  /* -------------------------------------------- */
+
+  transform: translate(-50%, -50%); /* Keeps it centered on your chosen coordinates */
+  
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.8rem;
+  color: #333;
+  white-space: nowrap; /* Prevents text wrapping */
+  text-align: center;
+}
+
+.tap-animate {
+  animation: pulseWhistle 1.5s infinite ease-in-out;
+}
+
+/* Smooth ease-in-out pulsing */
+@keyframes pulsePrompt {
+  0% { 
+    opacity: 0.3; 
+    transform: translate(-50%, -50%) scale(0.95); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1.05); 
+  }
+  100% { 
+    opacity: 0.3; 
+    transform: translate(-50%, -50%) scale(0.95); 
+  }
+}
+
+/* Smooth fade out when Fonka taps */
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
+}
+
+.tap-animate {
+  animation: pulsePrompt 2s infinite ease-in-out;
+}
+
+.tap-fade-out {
+  animation: fadeOut 0.5s forwards;
+}
