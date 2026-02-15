@@ -279,11 +279,27 @@
 
 /* Hidden Preloader: Forces Netlify to serve images before they are needed */
 .void-stage::after {
-  content: url('/assets/images/wezza_happy.png') 
-           url('/assets/images/wezza_happy_blink.png') 
-           url('/assets/images/wezza_hold_sign.png')
-           url('/assets/images/wezza_back_shadow.png') 
-           url('/assets/images/wezza_hold_sign_blink.png');
+  content:url('/assets/images/wezza_happy.png') 
+          url('/assets/images/wezza_happy_blink.png') 
+          url('/assets/images/wezza_hold_sign.png')
+          url('/assets/images/wezza_back_shadow.png') 
+          url('/assets/images/wezza_hold_sign_blink.png')
+           
+  /* MGR Running Frames (000-008) */
+          url('/assets/images/maghrb/MGR_000.png') url('/assets/images/maghrb/MGR_001.png')
+          url('/assets/images/maghrb/MGR_002.png') url('/assets/images/maghrb/MGR_003.png')
+          url('/assets/images/maghrb/MGR_004.png') url('/assets/images/maghrb/MGR_005.png')
+          url('/assets/images/maghrb/MGR_006.png') url('/assets/images/maghrb/MGR_007.png')
+          url('/assets/images/maghrb/MGR_008.png')
+
+    /* MGL Running Frames (000-008) */
+          url('/assets/images/maghrb/MGL_000.png') url('/assets/images/maghrb/MGL_001.png')
+          url('/assets/images/maghrb/MGL_002.png') url('/assets/images/maghrb/MGL_003.png')
+          url('/assets/images/maghrb/MGL_004.png') url('/assets/images/maghrb/MGL_005.png')
+          url('/assets/images/maghrb/MGL_006.png') url('/assets/images/maghrb/MGL_007.png')
+          url('/assets/images/maghrb/MGL_008.png');
+
+           
   position: absolute;
   width: 0;
   height: 0;
