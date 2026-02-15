@@ -276,3 +276,18 @@
 .tap-fade-out {
   animation: fadeOut 0.5s forwards;
 }
+
+/* Hidden Preloader: Forces Netlify to serve images before they are needed */
+.void-stage::after {
+  content: url('/assets/images/wezza_happy.png') 
+           url('/assets/images/wezza_happy_blink.png') 
+           url('/assets/images/wezza_hold_sign.png')
+           url('/assets/images/wezza_back_shadow.png') 
+           url('/assets/images/wezza_hold_sign_blink.png');
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
